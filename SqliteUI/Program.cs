@@ -5,13 +5,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using System;
 using System.IO;
-
+using SQLitePCL;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
+        Batteries.Init(); 
+
         SqliteCrud sql = new SqliteCrud(GetConnectionString());
+
 
         ReadAllContacts(sql);
         //ReadContact(sql,1);
