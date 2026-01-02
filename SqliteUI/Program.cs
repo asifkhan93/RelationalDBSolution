@@ -1,22 +1,36 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿
+using DataAccessLibrary;
+using DataAccessLibrary.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using System;
 using System.IO;
-using DataAccessLibrary;
-using DataAccessLibrary.Models;
+
+
 internal class Program
 {
     private static void Main(string[] args)
     {
+        SqliteCrud sql = new SqliteCrud(GetConnectionString());
 
-        SqlCrud sql = new SqlCrud(GetConnectionString());
-
-        //ReadAllContacts(sql);
+        ReadAllContacts(sql);
         //ReadContact(sql,1);
-        CreateContact(sql);
-
-        Console.WriteLine("Done Processing SQL Server");
+        //CreateContact(sql);
+        Console.WriteLine("Done Processing Sqlite");
         Console.ReadLine();
+    }
+    private static string GetConnectionString(string connectionStringName = "Default")
+    {
+        string output = string.Empty;
+
+        var builder = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json");
+
+        var config = builder.Build();
+        output = config.GetConnectionString(connectionStringName);
+
+        return output;
     }
 
 
@@ -39,12 +53,12 @@ internal class Program
         user.EmailAddresses.Add(new EmailAddressModel { Id =2, EmailAddress = "def@gmail.com" });
 
 
-        user.PhoneNumbers.Add(new PhoneNumberModel { Id= 1,PhoneNumber = "123-456-7890" });
+        user.PhoneNumbers.Add(new PhoneNumberModel { Id= 1, PhoneNumber = "123-456-7890" });
         user.PhoneNumbers.Add(new PhoneNumberModel { PhoneNumber = "124-426-7880" });
 
         sql.CreateContact(user);
     }
-    private static void ReadAllContacts(SqlCrud sql)
+    private static void ReadAllContacts(SqliteCrud sql)
     {
         var rows = sql.GetAllContacts();
         foreach (var row in rows)
@@ -63,20 +77,6 @@ internal class Program
     }
 
 
-
-    private static string GetConnectionString(string connectionStringName = "Default")
-    {
-        string output = string.Empty;
-
-        var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json");
-
-        var config = builder.Build();
-        output = config.GetConnectionString(connectionStringName);
-
-        return output;
-    }
 
 
 }
